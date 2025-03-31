@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FoodieFly - Help</title>
+    <link rel="stylesheet" href="/variables.css" />
+    <link rel="stylesheet" href="/style.css" />
+    <link rel="stylesheet" href="/base.css" />
+    <link rel="stylesheet" href="/header.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link rel="stylesheet" href="/dark-mode.css" />
+    <script src="/dark-mode.js" defer></script>
+    <style>
+        .help-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .dark-mode .help-container {
+            background-color: #222;
+            color: #fff;
+        }
+
+        .help-section {
+            margin-bottom: 2rem;
+        }
+
+        .help-section h2 {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .help-section p {
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .dark-mode .help-section p {
+            color: #ddd;
+        }
+
+        .back-btn {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .dark-mode .back-btn {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <header class="header">
+            <div class="logo-container">
+                <img src="https://dynamic.design.com/preview/logodraft/1a0e7e71-b424-4474-afea-fffb3ad6362c/image/large.png" class="logo" alt="FoodieFly logo" />
+                <h1>FoodieFly</h1>
+            </div>
+            <div class="header-right">
+                <div class="nav-buttons">
+                    <button id="dark-mode-toggle" class="nav-btn">
+                        <i class="fas fa-moon"></i> Dark Mode
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="help-container">
+            <div class="help-section">
+                <h2>How to Place an Order</h2>
+                <p>
+                    To place an order, simply search for a restaurant using the search bar, browse the menu, and add items to your cart. Once you're ready, click the cart icon and proceed to checkout. You'll need to sign in or create an account to complete your order.
+                </p>
+            </div>
+
+            <div class="help-section">
+                <h2>Delivery Information</h2>
+                <p>
+                    We offer delivery within a 10-mile radius of participating restaurants. Delivery times typically range from 30-60 minutes depending on your location and restaurant preparation time. Track your order status in the "Orders" section.
+                </p>
+            </div>
+
+            <div class="help-section">
+                <h2>Contact Support</h2>
+                <p>
+                    If you need assistance, our support team is available 24/7. Reach out via email at support@foodiefly.com or call us at 1-800-FOODIE (1-800-366-343). We're here to help with any issues or questions!
+                </p>
+            </div>
+
+            <a href="/restaurant" class="back-btn">Back to Home</a>
+        </main>
+    </div>
+</body>
+</html>

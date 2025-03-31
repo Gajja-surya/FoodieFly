@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Cart</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        h1 {
+            text-align: center;
+            color: #d35400;
+            font-size: 2.5em;
+        }
+
+        h2 {
+            color: #c51111;
+            margin: 20px 0 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background-color: #2ecc71;
+            color: white;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .item-image {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .quantity-btn {
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .quantity-btn:hover {
+            background-color: #27ae60;
+        }
+
+        .delete-btn {
+            color: #e74c3c;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .delete-btn:hover {
+            color: #c0392b;
+        }
+
+        .summary-section, .address-section, .payment-section, .bill-details {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .bill-details p {
+            margin: 8px 0;
+            font-size: 16px;
+            color: #333;
+        }
+
+        button {
+            background-color: #2ecc71;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px auto;
+            display: block;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #27ae60;
+        }
+
+        select {
+            padding: 8px;
+            width: 100%;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .dark-mode {
+            background-color: #000000;
+            color: #ffffff;
+        }
+
+        .dark-mode .summary-section,
+        .dark-mode .bill-details,
+        .dark-mode .address-section,
+        .dark-mode .payment-section {
+            background-color: #1a1a1a;
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+        }
+
+        .dark-mode th {
+            background-color: #219653;
+            color: #ffffff;
+        }
+
+        .dark-mode tr:hover {
+            background-color: #2a2a2a;
+        }
+
+        .dark-mode button,
+        .dark-mode .quantity-btn {
+            background-color: #219653;
+        }
+
+        .dark-mode button:hover,
+        .dark-mode .quantity-btn:hover {
+            background-color: #27ae60;
+        }
+
+        .dark-mode .bill-details p {
+            color: #ffffff;
+        }
+
+        .dark-mode select {
+            background-color: #1a1a1a;
+            color: #ffffff;
+            border: 1px solid #444;
+        }
+
+        .dark-mode .delete-btn {
+            color: #ff6b6b;
+        }
+
+        .dark-mode .delete-btn:hover {
+            color: #ff8787;
+        }
+    </style>
+</head>
+<body>
+    <h1>Your Cart</h1>
+    
+    <div class="summary-section">
+        <h2>Order Summary</h2>
+        <table id="cart-table">
+            <thead>
+                <tr>
+                    <th>Image</th>
+                    <th>Item Name</th>
+                    <th>Price (₹)</th>
+                    <th>Quantity</th>
+                    <th>Total (₹)</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="cart-items"></tbody>
+        </table>
+    </div>
+
+    <div class="bill-details">
+        <h2>Bill Details</h2>
+        <p>Subtotal: ₹<span id="subtotal">0</span></p>
+        <p>Delivery Fee: ₹<span id="delivery-fee">50</span></p>
+        <p>Tax (5%): ₹<span id="tax">0</span></p>
+        <p><strong>Total Amount: ₹<span id="total-amount">0</span></strong></p>
+    </div>
+
+    <div class="address-section">
+        <h2>Delivery Address</h2>
+        <p id="delivery-address">Loading address...</p>
+    </div>
+
+    <div class="payment-section">
+        <h2>Payment Method</h2>
+        <select id="payment-method">
+            <option value="CASH">Cash on Delivery</option>
+            <option value="CARD">Credit/Debit Card</option>
+            <option value="UPI">UPI</option>
+        </select>
+    </div>
+    <button onclick="placeOrder()">Place Order</button>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const body = document.body;
+            if (localStorage.getItem("darkMode") === "enabled") {
+                body.classList.add("dark-mode");
+            }
+            displayCart();
+            updateCartCount();
+            fetchUserAddress();
+        });
+
+        function displayCart() {
+            const cart = JSON.parse(localStorage.getItem("cart")) || { items: [] };
+            const tbody = document.getElementById("cart-items");
+            tbody.innerHTML = "";
+            let subtotal = 0;
+
+            cart.items.forEach((item, index) => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td><img src="${item.imagePath || 'https://via.placeholder.com/50'}" class="item-image" alt="${item.name}"></td>
+                    <td>${item.name}</td>
+                    <td>₹${item.price.toFixed(2)}</td>
+                    <td>
+                        <div class="quantity-controls">
+                            <button class="quantity-btn" onclick="updateQuantity(${index}, -1)">-</button>
+                            <span>${item.quantity}</span>
+                            <button class="quantity-btn" onclick="updateQuantity(${index}, 1)">+</button>
+                        </div>
+                    </td>
+                    <td>₹${(item.price * item.quantity).toFixed(2)}</td>
+                    <td><i class="fas fa-trash delete-btn" onclick="deleteItem(${index})"></i></td>
+                `;
+                tbody.appendChild(row);
+                subtotal += item.price * item.quantity;
+            });
+
+            const deliveryFee = 50;
+            const tax = subtotal * 0.05;
+            const totalAmount = subtotal + deliveryFee + tax;
+
+            document.getElementById("subtotal").textContent = subtotal.toFixed(2);
+            document.getElementById("delivery-fee").textContent = deliveryFee.toFixed(2);
+            document.getElementById("tax").textContent = tax.toFixed(2);
+            document.getElementById("total-amount").textContent = totalAmount.toFixed(2);
+        }
+
+        function updateQuantity(index, change) {
+            const cart = JSON.parse(localStorage.getItem("cart")) || { items: [] };
+            const newQuantity = cart.items[index].quantity + change;
+            if (newQuantity > 0) {
+                cart.items[index].quantity = newQuantity;
+            } else {
+                cart.items.splice(index, 1);
+            }
+            localStorage.setItem("cart", JSON.stringify(cart));
+            displayCart();
+            updateCartCount();
+        }
+
+        function deleteItem(index) {
+            const cart = JSON.parse(localStorage.getItem("cart")) || { items: [] };
+            cart.items.splice(index, 1);
+            if (cart.items.length === 0) cart.restaurantId = null;
+            localStorage.setItem("cart", JSON.stringify(cart));
+            displayCart();
+            updateCartCount();
+        }
+
+        function fetchUserAddress() {
+            const userId = localStorage.getItem("userId");
+            const addressElement = document.getElementById("delivery-address");
+            if (!userId) {
+                addressElement.textContent = "Please sign in to see your delivery address.";
+                return;
+            }
+
+            fetch(`/users/${userId}`, {
+                method: "GET",
+                headers: { "Accept": "application/json" }
+            })
+            .then(response => {
+                if (!response.ok) throw new Error("Failed to fetch address");
+                return response.json();
+            })
+            .then(user => {
+                addressElement.textContent = user.address || "No address provided.";
+            })
+            .catch(error => {
+                console.error("Error fetching address:", error);
+                addressElement.textContent = "Unable to load address.";
+            });
+        }
+
+        function placeOrder() {
+            const userId = localStorage.getItem("userId");
+            if (!userId) {
+                if (confirm("You need to sign in to place an order. Sign in now?")) {
+                    window.location.href = "/signin.html";
+                }
+                return;
+            }
+
+            const cart = JSON.parse(localStorage.getItem("cart")) || { items: [] };
+            if (cart.items.length === 0) {
+                alert("Cart is empty!");
+                return;
+            }
+
+            const subtotal = cart.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+            const deliveryFee = 50;
+            const tax = subtotal * 0.05;
+            const totalAmount = subtotal + deliveryFee + tax;
+            const restaurantId = cart.restaurantId;
+            const paymentMode = document.getElementById("payment-method").value;
+
+            const orderData = {
+                totalAmount: totalAmount,
+                status: "PENDING",
+                paymentMode: paymentMode,
+                user: { userId: parseInt(userId) },
+                restaurant: { restaurantId: parseInt(restaurantId) },
+                items: cart.items.map(item => ({
+                    itemId: item.id,
+                    name: item.name,
+                    price: item.price,
+                    imagePath: item.imagePath,
+                    quantity: item.quantity
+                }))
+            };
+
+            fetch("/orders/create", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(orderData)
+            })
+            .then(response => {
+                console.log("Response Status:", response.status);
+                // Log raw response text before parsing
+                return response.text().then(text => {
+                    console.log("Raw Response:", text);
+                    if (!response.ok) {
+                        throw new Error(`Failed to place order (Status ${response.status}): ${text}`);
+                    }
+                    return JSON.parse(text); // Parse manually after logging
+                });
+            })
+            .then(order => {
+                console.log("Order created:", order);
+                const orderDetails = {
+                    items: cart.items,
+                    subtotal: subtotal,
+                    deliveryFee: deliveryFee,
+                    tax: tax,
+                    totalAmount: totalAmount,
+                    paymentMode: paymentMode,
+                    orderDate: new Date().toLocaleString(),
+                    orderId: order.orderId
+                };
+                localStorage.setItem("lastOrder", JSON.stringify(orderDetails));
+                localStorage.removeItem("cart");
+                window.location.href = "/menus/order-success";
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("An error occurred while placing the order: " + error.message);
+            });
+        }
+        function updateCartCount() {
+            const cart = JSON.parse(localStorage.getItem("cart")) || { items: [] };
+            const totalItems = cart.items.reduce((sum, item) => sum + item.quantity, 0);
+            const cartCountElements = document.getElementsByClassName("cart-count");
+            for (let element of cartCountElements) {
+                element.textContent = totalItems;
+            }
+        }
+    </script>
+</body>
+</html>

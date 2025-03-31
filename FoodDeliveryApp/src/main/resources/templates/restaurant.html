@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FoodieFly - Find Your Next Meal</title>
+    <link rel="stylesheet" href="/variables.css" />
+    <link rel="stylesheet" href="/style.css" />
+    <link rel="stylesheet" href="/base.css" />
+    <link rel="stylesheet" href="/header.css" />
+    <link rel="stylesheet" href="/search.css" />
+    <link rel="stylesheet" href="/restaurant-card.css" />
+    <link rel="stylesheet" href="/banner.css" />
+    <link rel="stylesheet" href="/restaurant-grid.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link rel="stylesheet" href="/dark-mode.css" />
+    <script src="/dark-mode.js" defer></script>
+   <style>
+    /* Style for Signup button */
+    .nav-btn.signup-btn {
+        background-color: #ffffff; /* White background in light mode */
+        color: #333333; /* Dark gray text for contrast */
+        border: none;
+    }
+
+    .dark-mode .nav-btn.signup-btn {
+        background-color: #000000; /* Black background in dark mode */
+        color: #ffffff; /* White text for contrast */
+    }
+
+    .dark-mode .nav-btn.signup-btn:hover {
+        background-color: #333333; /* Darker gray for hover in dark mode */
+        color: #ffffff;
+    }
+
+    /* Style for Orders button */
+    .nav-btn.orders-btn {
+        background-color: #ffffff; /* White background in light mode */
+        color: #333333; /* Dark gray text for contrast */
+        border: none;
+    }
+
+    .dark-mode .nav-btn.orders-btn {
+        background-color: #000000; /* Black background in dark mode */
+        color: #ffffff; /* White text for contrast */
+    }
+
+    .dark-mode .nav-btn.orders-btn:hover {
+        background-color: #333333; /* Darker gray for hover in dark mode */
+        color: #ffffff;
+    }
+</style>
+</head>
+<body>
+    <div id="app">
+        <header class="header">
+            <div class="logo-container">
+                <img src="https://dynamic.design.com/preview/logodraft/1a0e7e71-b424-4474-afea-fffb3ad6362c/image/large.png" class="logo" alt="FoodieFly logo" />
+                <h1>FoodieFly</h1>
+            </div>
+            <div class="header-right">
+                <div class="search-container">
+                    <input type="text" placeholder="Search restaurants..." />
+                    <button class="search-btn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+                <div class="nav-buttons">
+                    <button class="nav-btn signin-btn" onclick="window.location.href='/signin.html'">
+                        <i class="fas fa-user"></i> Sign In
+                    </button>
+                    <button class="nav-btn signup-btn" onclick="window.location.href='/signup.html'">
+                        <i class="fas fa-user-plus"></i> Sign Up
+                    </button>
+                    <button class="nav-btn orders-btn" onclick="window.location.href='/orders'">
+                        <i class="fas fa-list-alt"></i> Orders
+                    </button>
+                    <a href="/cart" class="nav-btn cart-btn">
+                        <i class="fas fa-shopping-cart"></i> Cart
+                        <span id="cart-count">0</span>
+                    </a>
+                  <button class="nav-btn help-btn" onclick="window.location.href='/help.html'">
+    <i class="fas fa-question-circle"></i> Help
+</button>
+                    <button id="dark-mode-toggle" class="nav-btn">
+                        <i class="fas fa-moon"></i> Dark Mode
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="banner">
+            <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836" alt="Delicious Food Banner" />
+            <div class="banner-overlay">
+                <h2>Discover Amazing Restaurants</h2>
+                <p>Find the best local restaurants, cafes, and eateries near you</p>
+            </div>
+        </div>
+
+        <main class="restaurants-grid">
+            <a th:href="@{/menus/restaurant/{id}(id=${restaurant.restaurantId})}" 
+               th:each="restaurant : ${restaurants}" 
+               th:classappend="${restaurant.isActive == 'true' ? 'active' : ''}" 
+               class="restaurant-card">
+                <img th:src="${restaurant.imagePath}" th:alt="${restaurant.name}" />
+                <div class="restaurant-info">
+                    <h2 th:text="${restaurant.name}">Restaurant Name</h2>
+                    <div class="status">
+                        <i th:class="${restaurant.isActive == 'true' ? 'fas fa-circle active' : 'fas fa-circle inactive'}"></i>
+                        <span th:text="${restaurant.isActive == 'true' ? 'Open Now' : 'Closed'}">Status</span>
+                    </div>
+                    <div class="rating">
+                        <span th:each="i : ${#numbers.sequence(1, 5)}">
+                            <i th:class="${i <= restaurant.rating ? 'fas fa-star' : 'far fa-star'}"></i>
+                        </span>
+                        <span th:text="${restaurant.rating}">4.5</span>
+                    </div>
+                    <p class="cuisine" th:text="${restaurant.cusineType}">Cuisine Type</p>
+                    <p class="address" th:text="${restaurant.address}">Address</p>
+                </div>
+            </a>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            updateCartCount();
+        });
+
+        function updateCartCount() {
+            const cart = JSON.parse(localStorage.getItem("cart")) || { items: [] };
+            const totalItems = cart.items.reduce((sum, item) => sum + item.quantity, 0);
+            document.getElementById("cart-count").textContent = totalItems;
+        }
+    </script>
+</body>
+</html>

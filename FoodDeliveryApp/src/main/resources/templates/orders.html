@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Orders Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: rgb(255, 128, 64);
+        }
+
+        .form-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            transform: translateZ(0);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .form-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        a {
+            color: #e74c3c;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Dark Mode */
+        body.dark-mode {
+            background-color: #333;
+            color: #f5f5f5;
+        }
+
+        .dark-mode .form-container,
+        .dark-mode table {
+            background-color: #444;
+            box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
+        }
+
+        .dark-mode th {
+            background-color: #2c3e50;
+        }
+
+        .dark-mode tr:hover {
+            background-color: #555;
+        }
+
+        .dark-mode input,
+        .dark-mode select {
+            background-color: #555;
+            color: #f5f5f5;
+            border-color: #777;
+        }
+
+        .dark-mode button {
+            background-color: #2c3e50;
+        }
+
+        .dark-mode button:hover {
+            background-color: #34495e;
+        }
+    </style>
+</head>
+<body>
+    <h1>Orders Management</h1>
+
+   
+    <h2>All Orders</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>Order Date</th>
+                <th>Total Amount (₹)</th>
+                <th>Status</th>
+                <th>Payment Mode</th>
+                <th>User</th>
+                <th>Restaurant</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="order : ${orders}">
+                <td th:text="${order.orderId}"></td>
+                <td th:text="${order.orderDate}"></td>
+                <td th:text="${order.totalAmount}"></td>
+                <td th:text="${order.status}"></td>
+                <td th:text="${order.paymentMode}"></td>
+                <td th:text="${order.user.username}"></td>
+                <td th:text="${order.restaurant.name}"></td>
+                <td><a th:href="@{/orders/delete/{id}(id=${order.orderId})}" onclick="return confirm('Are you sure?')">Delete</a></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const body = document.body;
+            if (localStorage.getItem("darkMode") === "enabled") {
+                body.classList.add("dark-mode");
+            }
+        });
+    </script>
+</body>
+</html>

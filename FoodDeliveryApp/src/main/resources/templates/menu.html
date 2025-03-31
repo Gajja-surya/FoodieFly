@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spice Garden Restaurant</title>
+    <link rel="stylesheet" href="/menu1.css">
+    <link rel="stylesheet" href="/menu.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Styles only for the Add to Cart button */
+        .add-to-cart {
+            background-color: #e74c3c; /* Red background */
+            color: white; /* White text */
+            border: none;
+            padding: 8px 20px; /* Adjusted padding for elliptical shape */
+            border-radius: 50px; /* Large radius for ellipse shape */
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s, transform 0.3s;
+            outline: none;
+        }
+
+        .add-to-cart:hover:not(:disabled) {
+            background-color: #c0392b; /* Darker red on hover */
+            transform: scale(1.05); /* Slight scale-up effect */
+        }
+
+        .add-to-cart:disabled {
+            background-color: #7f8c8d; /* Gray for disabled state */
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+    </style>
+    
+    
+    
+    
+</head>
+<body>
+    <header>
+        <h1>Spice Garden Restaurant</h1>
+        <p>Authentic Indian Cuisine</p>
+        <div class="restaurant-header">
+            <div class="menu-title">
+                <i class="fas fa-utensils menu-symbol"></i>
+                <h1>Menu</h1>
+            </div>
+            <a href="/menus/cart" class="cart-icon">
+    <i class="fas fa-shopping-cart"></i>
+    <span id="cart-count">0</span>
+</a>
+        </div>
+    </header>
+
+    <div class="menu-container">
+        <div class="menu-card" th:each="menu : ${menus}">
+            <img th:src="${menu.imagePath}" th:alt="${menu.itemName}" 
+                 th:unless="${menu.imagePath} ? false : true" 
+                 src="https://via.placeholder.com/150" />
+            <div class="card-content">
+                <div class="item-header">
+                    <h2 th:text="${menu.itemName}">Item Name</h2>
+                    <div class="rating">
+                        <i class="fas fa-star" th:each="star : ${#numbers.sequence(1, menu.rating.intValue())}"></i>
+                        <i class="fas fa-star-half-alt" th:if="${menu.rating % 1 >= 0.5}"></i>
+                        <i class="far fa-star" 
+                           th:each="emptyStar : ${#numbers.sequence(menu.rating.intValue() + (menu.rating % 1 >= 0.5 ? 1 : 0) + 1, 5)}"></i>
+                        <span th:text="${menu.rating}">Rating</span>
+                    </div>
+                </div>
+                <p class="description" th:text="${menu.description}">Description</p>
+                <div class="item-footer">
+                    <span class="price" th:text="'₹' + ${menu.price}">₹0</span>
+                    <span th:class="${menu.isAvailable} ? 'available' : 'not-available'" 
+                          th:text="${menu.isAvailable} ? 'Available' : 'Not Available'">Status</span>
+                    <button class="add-to-cart" 
+                            th:disabled="${!menu.isAvailable}"
+                            th:data-item-id="${menu.menuId}"
+                            th:data-item-name="${menu.itemName}"
+                            th:data-item-price="${menu.price}"
+                            th:data-item-image="${menu.imagePath}"
+                            th:data-restaurant-id="${menu.restaurant.restaurantId}"
+                            onclick="addToCart(this)">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const body = document.body;
+            if (localStorage.getItem("darkMode") === "enabled") {
+                body.classList.add("dark-mode");
+            }
+            updateCartCount();
+        });
+
+        function addToCart(button) {
+            const itemId = button.getAttribute("data-item-id");
+            const itemName = button.getAttribute("data-item-name");
+            const itemPrice = parseFloat(button.getAttribute("data-item-price"));
+            const itemImage = button.getAttribute("data-item-image");
+            const restaurantId = button.getAttribute("data-restaurant-id");
+
+            let cart = JSON.parse(localStorage.getItem("cart")) || { items: [], restaurantId: null };
+
+            if (cart.restaurantId && cart.restaurantId !== restaurantId) {
+                if (confirm("Adding items from a different restaurant will clear your current cart. Proceed?")) {
+                    cart = { items: [], restaurantId: restaurantId };
+                } else {
+                    return;
+                }
+            }
+
+            if (!cart.restaurantId) {
+                cart.restaurantId = restaurantId;
+            }
+
+            const existingItem = cart.items.find(item => item.id === itemId); // Use 'id' consistently
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.items.push({ 
+                    id: itemId, // Changed from menuId to id for consistency
+                    name: itemName, 
+                    price: itemPrice, 
+                    imagePath: itemImage,
+                    quantity: 1 
+                });
+            }
+
+            localStorage.setItem("cart", JSON.stringify(cart));
+            updateCartCount();
+            alert(`${itemName} added to cart!`);
+        }
+
+        function updateCartCount() {
+            const cart = JSON.parse(localStorage.getItem("cart")) || { items: [] };
+            const totalItems = cart.items.reduce((sum, item) => sum + item.quantity, 0);
+            document.getElementById("cart-count").textContent = totalItems;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+/* dark-mode.css */
+
+/* Default (Light Mode) variables */
+:root {
+    --background-color: #ffffff; /* White background for light mode */
+    --text-color: #333333;      /* Dark text for light mode */
+    --header-bg: #f8f8f8;       /* Light header background */
+    --card-bg: #ffffff;         /* White card background */
+    --border-color: #ddd;       /* Light border */
+    --button-bg: #f0f0f0;       /* Light button background */
+    --button-hover: #e0e0e0;    /* Light button hover */
+}
+
+/* Apply light mode defaults */
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition */
+}
+
+.header {
+    background-color: var(--header-bg);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.restaurant-card {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+}
+
+.nav-btn, .search-btn {
+    background-color: var(--button-bg);
+    color: var(--text-color);
+}
+
+.nav-btn:hover, .search-btn:hover {
+    background-color: var(--button-hover);
+}
+
+.search-container input {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+}
+
+/* Dark Mode overrides */
+.dark-mode {
+    --background-color: #0e0c0c;  /* Dark background */
+    --text-color: #f6f3f3;        /* Light text */
+    --header-bg: #131111;         /* Dark header */
+    --card-bg: #242424;           /* Dark card */
+    --border-color: #333;         /* Dark border */
+    --button-bg: #333;            /* Dark button */
+    --button-hover: #555;         /* Dark button hover */
+}
+
+.dark-mode .banner img {
+    opacity: 0.8;
+    border-bottom: 3px solid #dceb12; /* Kept your custom style */
+}

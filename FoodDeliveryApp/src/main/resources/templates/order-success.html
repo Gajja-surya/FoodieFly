@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Order Successful</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        h1 {
+            text-align: center;
+            color: #d35400;
+            font-size: 2.5em;
+        }
+
+        h3 {
+            color: #c51111;
+            margin: 20px 0 10px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .order-details {
+            margin-top: 20px;
+        }
+
+        .item-image {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+
+        button.track-button {
+            background-color: #2ecc71;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 20px auto;
+            display: block;
+            transition: background-color 0.3s;
+        }
+
+        button.track-button:hover {
+            background-color: #27ae60;
+        }
+
+        /* Dark Mode Styles */
+        .dark-mode {
+            background-color: #000000;
+            color: #ffffff;
+        }
+
+        .dark-mode .container {
+            background-color: #1a1a1a;
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+        }
+
+        .dark-mode h1 {
+            color: #ff6b6b; /* Adjusted for visibility in dark mode */
+        }
+
+        .dark-mode h3 {
+            color: #ff8787; /* Adjusted for visibility in dark mode */
+        }
+
+        .dark-mode button.track-button {
+            background-color: #219653;
+        }
+
+        .dark-mode button.track-button:hover {
+            background-color: #27ae60;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Order Placed Successfully!</h1>
+        <div class="order-details" id="order-details">
+            <!-- Order details will be populated here -->
+        </div>
+        <button class="track-button" onclick="window.location.href='/menus/track-order'">Track Order</button>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const body = document.body;
+            if (localStorage.getItem("darkMode") === "enabled") {
+                body.classList.add("dark-mode");
+            }
+
+            const orderDetails = JSON.parse(localStorage.getItem("lastOrder"));
+            const container = document.getElementById("order-details");
+
+            if (orderDetails) {
+                let html = `
+                    <p><strong>Order ID:</strong> ${orderDetails.orderId || "N/A"}</p>
+                    <p><strong>Order Date:</strong> ${orderDetails.orderDate}</p>
+                    <h3>Items:</h3>
+                `;
+                
+                orderDetails.items.forEach(item => {
+                    html += `
+                        <div style="display: flex; align-items: center; margin: 10px 0;">
+                            <img src="${item.imagePath || 'https://via.placeholder.com/50'}" class="item-image" alt="${item.name}">
+                            <div>
+                                <p>${item.name}</p>
+                                <p>₹${item.price} x ${item.quantity} = ₹${(item.price * item.quantity).toFixed(2)}</p>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                html += `
+                    <p><strong>Subtotal:</strong> ₹${orderDetails.subtotal.toFixed(2)}</p>
+                    <p><strong>Delivery Fee:</strong> ₹${orderDetails.deliveryFee.toFixed(2)}</p>
+                    <p><strong>Tax:</strong> ₹${orderDetails.tax.toFixed(2)}</p>
+                    <p><strong>Total Amount:</strong> ₹${orderDetails.totalAmount.toFixed(2)}</p>
+                    <p><strong>Payment Method:</strong> ${orderDetails.paymentMode}</p>
+                `;
+
+                container.innerHTML = html;
+            } else {
+                container.innerHTML = "<p>No order details found. Please try placing the order again.</p>";
+            }
+        });
+    </script>
+</body>
+</html>
